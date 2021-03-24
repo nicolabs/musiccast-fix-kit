@@ -7,6 +7,9 @@ const SPEAKERS_IP = process.env.SPEAKERS_IP;
 const LOCAL_IP = process.env.LOCAL_IP || "0.0.0.0";
 const INCOMING_EVENT_SERVER_PORT = parseInt(process.env.PORT) || 41100;
 
+console.log("YAMAHA_IP=",YAMAHA_IP);
+console.log("SPEAKERS_IP=",SPEAKERS_IP);
+
 const inputSourceToSoundProgam = inputSource => {
   switch (inputSource) {
     case 'airplay':
@@ -88,11 +91,12 @@ const sendEventServerAddress = port =>
   });
 
 const handleIncomingEvent = event => {
-  console.log(event)
+  // TODO Log all events at debug level
   const isInputChanged = event.main && typeof event.main.input !== 'undefined';
 
   // e.g. { main: { volume: 47 }, device_id: 'AC44F2852577' }
   if ( event.main && typeof event.main.volume !== 'undefined' ) {
+    console.log(event);
     setVolume(SPEAKERS_IP,event.main.volume);
   }
 
