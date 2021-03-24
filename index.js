@@ -2,8 +2,9 @@ const udp = require('dgram');
 const server = udp.createSocket('udp4');
 const http = require('http');
 
-const YAMAHA_IP = process.env.YAMAHA_IP || '192.168.1.216';
-const LOCAL_IP = process.env.LOCAL_IP || '192.168.1.187';
+const YAMAHA_IP = process.env.YAMAHA_IP;
+const SPEAKERS_IP = process.env.SPEAKERS_IP;
+const LOCAL_IP = process.env.LOCAL_IP || "0.0.0.0";
 const INCOMING_EVENT_SERVER_PORT = parseInt(process.env.PORT) || 41100;
 
 const inputSourceToSoundProgam = inputSource => {
@@ -32,12 +33,12 @@ const inputSourceShouldUseClearVoice = inputSource => {
   }
 };
 
-const send = (path, headers) =>
+const send = (host, path, headers) =>
   http
     .get(
       {
         localAddress: LOCAL_IP,
-        host: YAMAHA_IP,
+        host: host,
         path,
         timeout: 3000,
         headers: {
@@ -64,24 +65,36 @@ const send = (path, headers) =>
 
 const sendSetSoundProgram = soundProgram =>
   send(
+    YAMAHA_IP,
     `/YamahaExtendedControl/v1/main/setSoundProgram?program=${soundProgram}`
   );
 
 const sendSetClearVoice = enabled =>
   send(
+    YAMAHA_IP,
     `/YamahaExtendedControl/v1/main/setClearVoice?enabled=${
       enabled ? 'true' : 'false'
     }`
   );
 
+const setVolume = (host,volume) =>
+  send(host,'/YamahaExtendedControl/v1/main/setVolume?volume='+volume);
+
 const sendEventServerAddress = port =>
-  send('/YamahaExtendedControl/v1', {
+  send(YAMAHA_IP,
+    '/YamahaExtendedControl/v1', {
     'X-AppName': 'MusicCast/1',
     'X-AppPort': port
   });
 
 const handleIncomingEvent = event => {
+  console.log(event)
   const isInputChanged = event.main && typeof event.main.input !== 'undefined';
+
+  // e.g. { main: { volume: 47 }, device_id: 'AC44F2852577' }
+  if ( event.main && typeof event.main.volume !== 'undefined' ) {
+    setVolume(SPEAKERS_IP,event.main.volume);
+  }
 
   if (isInputChanged) {
     const soundProgram = inputSourceToSoundProgam(event.main.input);
@@ -89,11 +102,11 @@ const handleIncomingEvent = event => {
 
     if (soundProgram) {
       console.log('Changing sound program to', soundProgram);
-      sendSetSoundProgram(soundProgram);
+      //sendSetSoundProgram(soundProgram);
     }
 
     console.log('Setting clear voice to', setClearVoice);
-    sendSetClearVoice(setClearVoice);
+    // sendSetClearVoice(setClearVoice);
   }
 };
 
