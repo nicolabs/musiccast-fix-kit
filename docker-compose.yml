@@ -1,0 +1,20 @@
+version: "3"
+
+services:
+  musiccast-repairkit:
+    build: .
+    image: nicolabs/musiccast-repairkit
+    ports:
+      # Do not specify a 'published' IP as it will probably fail to bind
+      # inside the container, which has is own private IP range
+      - target: 41100
+        protocol: udp
+        mode: host
+    env_file: .env
+    deploy:
+      mode: replicated
+      replicas: 1
+    logging:
+      options:
+        max-size: "200k"
+        max-file: "10"
