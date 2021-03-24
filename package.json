@@ -1,8 +1,8 @@
 {
-  "name": "yamaha-sound-program-by-source",
-  "version": "1.0.0",
+  "name": "musiccast-repairkit",
+  "version": "0.0.0",
   "main": "index.js",
-  "author": "axelo",
+  "author": "nicobo (https://www.nicolabs.net/people/nicobo)",
   "license": "MIT",
   "private": true,
   "dependencies": {}
