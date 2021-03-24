@@ -40,6 +40,8 @@ Currently the following mappings from source to sound program are hard coded
 
 ## Docker build & run
 
+Create a local .env
+
 Build :
 
   docker-compose build
