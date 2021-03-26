@@ -5,5 +5,11 @@
   "author": "nicobo (https://www.nicolabs.net/people/nicobo)",
   "license": "MIT",
   "private": true,
-  "dependencies": {}
+  "engines": {
+    "node": ">=10"
+  },
+  "dependencies": {
+    "yamaha-yxc-nodejs": "0.0.13",
+    "yargs": "^16.2.0"
+  }
 }

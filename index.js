@@ -1,40 +1,13 @@
+const yargs = require('yargs');
+const path = require('path');
 const udp = require('dgram');
 const server = udp.createSocket('udp4');
 const http = require('http');
+const YamahaYXC = require('yamaha-yxc-nodejs');
 
-const YAMAHA_IP = process.env.YAMAHA_IP;
-const SPEAKERS_IP = process.env.SPEAKERS_IP;
 const LOCAL_IP = process.env.LOCAL_IP || "0.0.0.0";
 const INCOMING_EVENT_SERVER_PORT = parseInt(process.env.PORT) || 41100;
 
-console.log("YAMAHA_IP=",YAMAHA_IP);
-console.log("SPEAKERS_IP=",SPEAKERS_IP);
-
-const inputSourceToSoundProgam = inputSource => {
-  switch (inputSource) {
-    case 'airplay':
-    case 'spotify':
-      return 'music';
-
-    case 'tv':
-    case 'bd_dvd':
-      return 'tv_program';
-
-    default:
-      return undefined;
-  }
-};
-
-const inputSourceShouldUseClearVoice = inputSource => {
-  switch (inputSource) {
-    case 'tv':
-    case 'bd_dvd':
-      return true;
-
-    default:
-      return false;
-  }
-};
 
 const send = (host, path, headers) =>
   http
@@ -66,56 +39,17 @@ const send = (host, path, headers) =>
       console.error('Error', err.message);
     });
 
-const sendSetSoundProgram = soundProgram =>
-  send(
-    YAMAHA_IP,
-    `/YamahaExtendedControl/v1/main/setSoundProgram?program=${soundProgram}`
-  );
-
-const sendSetClearVoice = enabled =>
-  send(
-    YAMAHA_IP,
-    `/YamahaExtendedControl/v1/main/setClearVoice?enabled=${
-      enabled ? 'true' : 'false'
-    }`
-  );
-
-const setVolume = (host,volume) =>
-  send(host,'/YamahaExtendedControl/v1/main/setVolume?volume='+volume);
-
-const sendEventServerAddress = port =>
-  send(YAMAHA_IP,
+const sendEventServerAddress = (hostname,port) =>
+  send(hostname,
     '/YamahaExtendedControl/v1', {
     'X-AppName': 'MusicCast/1',
     'X-AppPort': port
   });
 
-const handleIncomingEvent = event => {
-  // TODO Log all events at debug level
-  const isInputChanged = event.main && typeof event.main.input !== 'undefined';
-
-  // e.g. { main: { volume: 47 }, device_id: 'AC44F2852577' }
-  if ( event.main && typeof event.main.volume !== 'undefined' ) {
-    console.log(event);
-    setVolume(SPEAKERS_IP,event.main.volume);
-  }
-
-  if (isInputChanged) {
-    const soundProgram = inputSourceToSoundProgam(event.main.input);
-    const setClearVoice = inputSourceShouldUseClearVoice(event.main.input);
-
-    if (soundProgram) {
-      console.log('Changing sound program to', soundProgram);
-      //sendSetSoundProgram(soundProgram);
-    }
-
-    console.log('Setting clear voice to', setClearVoice);
-    // sendSetClearVoice(setClearVoice);
-  }
-};
 
 server.on('close', () => {
   console.log('Server is closed!');
+  // TODO ? Notify the device not to send events anymore ?
 });
 
 server.on('error', error => {
@@ -128,13 +62,16 @@ server.on('message', (msg, _info) => {
 
   try {
     body = JSON.parse(msg.toString('utf8'));
+    // console.log(body);
   } catch (err) {
     console.warn('Could not parse event', msg.toString());
     return;
   }
 
-  // console.log(body);
-  handleIncomingEvent(body);
+  // Runs each scenario on this event
+  for ( s=0 ; s<scenarii.length ; s++ ) {
+    scenarii[s].handler.onEvent(body);
+  }
 });
 
 server.on('listening', () => {
@@ -147,11 +84,63 @@ server.on('listening', () => {
     ipaddr + ':' + port
   );
 
-  sendEventServerAddress(port);
+  // Register at each configured 'source'
+  var sourcesDict = {};
+  for ( s=0 ; s<scenarii.length ; s++ ) {
+    var scenario = scenarii[s];
+    if ( scenario.conf && typeof scenario.conf !== 'undefined' &&
+        scenario.conf.source && typeof scenario.conf.source !== 'undefined' ) {
+          sourcesDict[scenario.conf.source] = true;
+    }
+  }
+  sourcesList = Object.keys(sourcesDict);
+  for ( s=0 ; s<sourcesList.length ; s++ ) {
+    console.log("Registering with port",port,"at ",sourcesList[s])
+    sendEventServerAddress(sourcesList[s],port);
 
-  // After 10 minutes the receiver will drop this server to be notified unless we
-  // say hi again, so to be on the safe side, ask again every 5 minutes.
-  setInterval(() => sendEventServerAddress(port), 5 * 60 * 1000);
+    // After 10 minutes the receiver will drop this server to be notified unless we
+    // say hi again, so to be on the safe side, ask again every 5 minutes.
+    setInterval(() => sendEventServerAddress(sourcesList[s],port), 5 * 60 * 1000);
+  }
 });
+
+// Command line parsing
+const argv = yargs
+    .option('s', {
+      alias: ['scripts'],
+      describe: 'Load these .js files each implementing a scenario',
+      requiresArg: true,
+      type: 'array',
+      demandOption: true
+    })
+    // Configuration as a whole .json file
+    .config()
+    .help()
+    .alias('help', 'h')
+    .argv;
+console.log("argv:", argv);
+
+// Instanciates the handlers for each scenario
+var scenarii = [];
+const scripts = argv.scripts;
+for ( var s=0 ; s<scripts.length ; s++ ) {
+  var scenarioModule = scripts[s];
+
+  console.log("Loading scenario :", scenarioModule);
+  var scenarioClass = require(scenarioModule);
+
+  var scenarioName = path.basename(scenarioModule, path.extname(scenarioModule));
+  console.log("Scenario name :", scenarioName);
+  var conf = Object.assign({}, argv, argv.conf[scenarioName]);
+  console.log("Scenario conf. :", conf);
+
+  scenarii.push({
+    name: scenarioName,
+    conf: conf,
+    handler: new scenarioClass(conf)
+  });
+}
+console.log("Scenarii :", scenarii);
+
 
 server.bind(INCOMING_EVENT_SERVER_PORT, LOCAL_IP);

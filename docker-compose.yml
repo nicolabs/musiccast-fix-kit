@@ -1,9 +1,12 @@
-version: "3.2"
+version: "3.7"
 
 services:
   musiccast-repairkit:
     build: .
     image: nicolabs/musiccast-repairkit
+    command: "-s ./scripts/sync-volume.js --source ${YAMAHA_SOURCE_IP} --target ${YAMAHA_SPEAKER_IP}"
+    # See https://github.com/nodejs/docker-node/blob/main/docs/BestPractices.md#handling-kernel-signals
+    init: true
     ports:
       - target: 41100
         published: 41100
