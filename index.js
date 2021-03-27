@@ -8,7 +8,6 @@ const YamahaYXC = require('yamaha-yxc-nodejs');
 const LOCAL_IP = process.env.LOCAL_IP || "0.0.0.0";
 const INCOMING_EVENT_SERVER_PORT = parseInt(process.env.PORT) || 41100;
 
-
 const send = (host, path, headers) =>
   http
     .get(
@@ -36,15 +35,18 @@ const send = (host, path, headers) =>
       }
     )
     .on('error', err => {
-      console.error('Error', err.message);
+      console.error('Error on send(',host,path,headers,') :', err.message);
     });
 
-const sendEventServerAddress = (hostname,port) =>
-  send(hostname,
-    '/YamahaExtendedControl/v1', {
-    'X-AppName': 'MusicCast/1',
-    'X-AppPort': port
-  });
+const sendEventServerAddress = (hostname,port) => {
+    console.debug("sendEventServerAddress",hostname,port);
+    send(hostname,
+      '/YamahaExtendedControl/v1', {
+      'X-AppName': 'MusicCast/1',
+      'X-AppPort': port
+      }
+    );
+  };
 
 
 server.on('close', () => {
@@ -53,7 +55,7 @@ server.on('close', () => {
 });
 
 server.on('error', error => {
-  console.error('Error', error);
+  console.error('Socket error (',host,path,headers,') :', error);
   server.close();
 });
 
@@ -93,14 +95,15 @@ server.on('listening', () => {
           sourcesDict[scenario.conf.source] = true;
     }
   }
-  sourcesList = Object.keys(sourcesDict);
-  for ( s=0 ; s<sourcesList.length ; s++ ) {
-    console.log("Registering with port",port,"at ",sourcesList[s])
-    sendEventServerAddress(sourcesList[s],port);
+  var sourcesList = Object.keys(sourcesDict);
+  for ( var s=0 ; s<sourcesList.length ; s++ ) {
+    var source = sourcesList[s];
+    console.log("Registering with port",port,"at ",source);
+    sendEventServerAddress(source,port);
 
     // After 10 minutes the receiver will drop this server to be notified unless we
     // say hi again, so to be on the safe side, ask again every 5 minutes.
-    setInterval(() => sendEventServerAddress(sourcesList[s],port), 5 * 60 * 1000);
+    setInterval(() => sendEventServerAddress(source,port), 5 * 60 * 1000);
   }
 });
 
