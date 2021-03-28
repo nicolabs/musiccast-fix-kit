@@ -39,7 +39,7 @@ const send = (host, path, headers) =>
     });
 
 const sendEventServerAddress = (hostname,port) => {
-    console.debug("sendEventServerAddress",hostname,port);
+    //console.debug("sendEventServerAddress",hostname,port);
     send(hostname,
       '/YamahaExtendedControl/v1', {
       'X-AppName': 'MusicCast/1',
