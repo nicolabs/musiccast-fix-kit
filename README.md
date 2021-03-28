@@ -7,7 +7,7 @@ This program will help you implement missing features for your [Yamaha MusicCast
 Scenarios are pluggable scripts that you can implement in [NodeJs](https://nodejs.org/). Scripts are already provided for the following use cases :
 
 - [change the sound program when you're switching from e.g. TV to Spotify and vice versa](#automatic-sound-program-depending-on-the-source)
-- [synchronize the volume of two devices](#sync-volume-of-two-devices)
+- [synchronize the volume of two devices](#sync-volume-of-several-devices)
 
 
 
