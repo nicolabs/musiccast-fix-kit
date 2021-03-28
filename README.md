@@ -1,8 +1,10 @@
 # MusicCast "repair kit"
 
-This program will automatically update the settings of your MusicCast© devices for you, that cannot be done by the devices alone.
+[![Docker Hub](https://github.com/nicolabs/musiccast-repairkit/actions/workflows/dockerhub.yml/badge.svg)](https://hub.docker.com/r/nicolabs/musiccast-repairkit)
 
-It currently implements the following use cases :
+This program will automatically implement missing features for your [Yamaha MusicCast©](https://usa.yamaha.com/products/contents/audio_visual/musiccast/index.html) devices for you by watching events (e.g. volume or source change) and updating the settings according to your scenarios.
+
+Scenarios are pluggable scripts that you can implement in [NodeJs](https://nodejs.org/). Scripts are already provided for the following use cases :
 
 - change the sound program when you're switching from e.g. TV to Spotify and vice verse
 - synchronize the volume of two devices
@@ -90,23 +92,23 @@ Update `docker-compose.yml` to reflect the IP addresses of your setup (or use a 
 
 Build :
 
-  docker-compose build
+    docker-compose build
 
 Run locally :
 
-  docker-compose up --detach
+    docker-compose up --detach
 
 Deploy on a swarm :
 
-  docker stack deploy -c docker-compose.yml musiccast-repairkit
+    docker stack deploy -c docker-compose.yml musiccast-repairkit
 
 
 
 ## Logging and debugging
 
-Will log network activity :
+This will log network activity :
 
-  NODE_DEBUG="net" node index.js ...
+    NODE_DEBUG="net" node index.js ...
 
 
 # References
