@@ -1,4 +1,4 @@
-# MusicCast "repair kit"
+# MusicCast "repair kit" 🩹
 
 [![Docker Hub](https://github.com/nicolabs/musiccast-repairkit/actions/workflows/dockerhub.yml/badge.svg)](https://hub.docker.com/r/nicolabs/musiccast-repairkit)
 
