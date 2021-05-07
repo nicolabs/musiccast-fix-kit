@@ -1,6 +1,6 @@
 # MusicCast "repair kit" 🩹
 
-[![Docker Hub](https://github.com/nicolabs/musiccast-repairkit/actions/workflows/dockerhub.yml/badge.svg)](https://hub.docker.com/r/nicolabs/musiccast-repairkit)
+[![Docker Hub](https://github.com/nicolabs/musiccast-repairkit/actions/workflows/dockerhub.yml/badge.svg)](https://hub.docker.com/r/nicolabs/musiccast-repairkit) [![Buy us a tree](https://img.shields.io/badge/Plant%20trees-%F0%9F%8C%B3-lightgreen)](https://plant.treeware.earth/nicolabs/musiccast-repairkit)
 
 This program will help you implement missing features for your [Yamaha MusicCast©](https://usa.yamaha.com/products/contents/audio_visual/musiccast/index.html) devices by watching events (e.g. volume or source change) and automatically updating the settings, according to your scenarios.
 
@@ -17,6 +17,8 @@ Scripts are already provided for the following use cases :
 Each scenario is implemented as a script in the scripts directory in this project.
 
 ### Automatic sound program depending on the source
+
+![Illustration : source buttons on remote](doc/source-buttons.png)
 
 *This is the script that comes from the original project, axelo/yamaha-sound-program-by-source.*
 
@@ -35,6 +37,8 @@ Top-level options (e.g. `--source`) and configuration file are also valid.
 
 
 ### Sync volume of several devices
+
+![Illustration : volume buttons on remote](doc/volume-buttons.png)
 
 If you have a Yamaha MusicCast receiver (like *CRX N470D*) *wirelessly* connected to Yamaha MusicCast speakers (like a MusicCast 20 stereo pair), you may have noticed that using the front volume button or the IR remote from the CRX will not update the volume of the linked speakers. Those hardware buttons only work with speakers directly wired to the CRX receiver. Your only option to set the same volume to all connected devices is to use the Yahama MusicCast mobile app, which is far less user-friendly than the physical remote.
 
@@ -135,3 +139,8 @@ This will log network activity :
 - https://www.pdf-archive.com/2017/04/21/yxc-api-spec-advanced/yxc-api-spec-advanced.pdf
 - https://github.com/samvdb/php-musiccast-api
 - [musiccast2mqtt, another implementation with MQTT, but old](https://github.com/ppt000/musiccast2mqtt) ([doc](https://musiccast2mqtt.readthedocs.io/en/latest/))
+
+
+## Licence
+
+This package is [Treeware](https://treeware.earth). If you use it in production, then we ask that you [**buy the world a tree**](https://plant.treeware.earth/nicolabs/musiccast-repairkit) to thank us for our work. By contributing to the Treeware forest you’ll be creating employment for local families and restoring wildlife habitats.
