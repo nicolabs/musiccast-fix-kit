@@ -14,13 +14,13 @@ Scripts are already provided for the following use cases :
 
 ## Provided scenarios
 
-Each scenario is implemented as a script in the scripts directory in this project.
+Each scenario is implemented as a script in the `scripts/` directory in this project.
 
 ### Automatic sound program depending on the source
 
 ![Illustration : source buttons on remote](doc/source-buttons.png)
 
-*This is the script that comes from the original project, axelo/yamaha-sound-program-by-source.*
+*This is the script that comes from the original project, [axelo/yamaha-sound-program-by-source](https://github.com/axelo/yamaha-sound-program-by-source).*
 
 When the input source of your Yamaha receiver changes, the sound program and clear voice settings are automatically changed.
 
@@ -33,7 +33,7 @@ Currently the following mappings from source to sound program are hard coded
 
 On the command line, use `-s scripts/audio-profile.js` to enable this script and use the `--conf-audio-profile-source` option to set the hostname or IP address of the receiver.
 
-Top-level options (e.g. `--source`) and configuration file are also valid.
+Top-level options (e.g. `--source`) and configuration file are also valid (see instructions below).
 
 
 ### Sync volume of several devices
@@ -48,11 +48,12 @@ On the command line, use `-s scripts/sync-volume.js` to enable this script and u
 - `--conf-sync-volume-source` sets the hostname or IP address of the *master* receiver
 - `--conf-sync-volume-target` lists the *slave* devices that will be updated with the master's volume. You can separate them with a space or pass the option several times.
 
-Top-level options (e.g. `--source`) and configuration file are also valid.
-
+Top-level options (e.g. `--source`) and configuration file are also valid (see instructions below).
 
 
 ## Command line usage
+
+This program requires [Node.js](https://nodejs.org) to run.
 
 When running the program you need to specify which scenarios to run.
 The scenarios are `.js` scripts which implement the use cases above. More details in the next sections.
@@ -61,13 +62,13 @@ Use the `-s` command line option to specify which script to load :
 
     node . -s ./scripts/sync-volume.js ./scripts/debug.js --source=192.168.1.42 --target=192.168.1.43 --target=192.168.1.44
 
-Or in a configuration file :
+Or in a configuration file (let's say `config.json`) :
 
 ```json
 {
   "conf": {
     "sync-volume": {
-      "source": "192.168.1.43",
+      "source": "192.168.1.42",
       "target": [
         "192.168.1.43",
         "192.168.1.44"
@@ -82,9 +83,9 @@ Then use the `--config` option :
     node . -s ./scripts/sync-volume.js ./scripts/debug.js --config config.json
 
 You can define generic options at the top level and scenario-specific options under a prefix named after the script's name (its filename without extension).
-For instance with `--source 1.2.3.4 --conf.sync-volume.source 5.6.7.8`, `1.2.3.4` will be used as the *source* parameter by default but `5.6.7.8` will override its value for the *sync-volume* scenario only.
+For instance with `--source 1.2.3.4 --conf.sync-volume.source 5.6.7.8`, `1.2.3.4` will be used as the *source* parameter by default but `5.6.7.8` will be used for the *sync-volume* scenario only.
 
-You can pass those arguments multiple times or give several values if you need to.
+You can pass those arguments multiple times or give several space-separated values if you need to.
 
 The following environment variables may be specified before running `index.js` :
 
@@ -98,6 +99,8 @@ Example
 
 
 ## Docker usage
+
+Instead of installing _Node.js_ and running the scripts you can run a [docker](https://www.docker.com/) image.
 
 Please see [docker-compose.yml](docker-compose.yml) for a deployment template.
 
@@ -120,7 +123,7 @@ Run locally :
 
     docker-compose up --detach
 
-Deploy on a swarm :
+Deploy on a swarm cluster :
 
     docker stack deploy -c docker-compose.yml musiccast-repairkit
 
