@@ -1,6 +1,6 @@
 const yargs = require('yargs');
 const path = require('path');
-const log = require('winston');
+const log = require('./logging');
 const udp = require('dgram');
 const server = udp.createSocket('udp4');
 const http = require('http');
@@ -31,16 +31,16 @@ const send = (host, path, headers) =>
         });
 
         resp.on('end', () => {
-          // console.log(data);
+          // log.info(data);
         });
       }
     )
     .on('error', err => {
-      console.error('Error on send(',host,path,headers,') :', err.message);
+      log.error('Error on send(',host,path,headers,') :', err.message);
     });
 
 const sendEventServerAddress = (hostname,port) => {
-    //console.debug("sendEventServerAddress",hostname,port);
+    //log.debug("sendEventServerAddress %s %s",hostname,port);
     send(hostname,
       '/YamahaExtendedControl/v1', {
       'X-AppName': 'MusicCast/1',
@@ -51,12 +51,12 @@ const sendEventServerAddress = (hostname,port) => {
 
 
 server.on('close', () => {
-  console.log('Server is closed!');
+  log.info('Server is closed!');
   // TODO ? Notify the device not to send events anymore ?
 });
 
 server.on('error', error => {
-  console.error('Socket error (',host,path,headers,') :', error);
+  log.error('Socket error (',host,path,headers,') :', error);
   server.close();
 });
 
@@ -65,9 +65,9 @@ server.on('message', (msg, _info) => {
 
   try {
     body = JSON.parse(msg.toString('utf8'));
-    // console.log(body);
+    // log.info(body);
   } catch (err) {
-    console.warn('Could not parse event', msg.toString());
+    log.warn('Could not parse event', msg.toString());
     return;
   }
 
@@ -82,10 +82,7 @@ server.on('listening', () => {
   const port = address.port;
   const ipaddr = address.address;
 
-  console.log(
-    'Incoming event server is listening at port',
-    ipaddr + ':' + port
-  );
+  log.info( 'Incoming event server is listening at port %s:%s', ipaddr, port );
 
   // Register at each configured 'source'
   var sourcesDict = {};
@@ -99,7 +96,7 @@ server.on('listening', () => {
   var sourcesList = Object.keys(sourcesDict);
   for ( var s=0 ; s<sourcesList.length ; s++ ) {
     var source = sourcesList[s];
-    console.log("Registering with port",port,"at ",source);
+    log.info("Registering with port %s at %s",port,source);
     sendEventServerAddress(source,port);
 
     // After 10 minutes the receiver will drop this server to be notified unless we
@@ -122,7 +119,7 @@ const argv = yargs
     .help()
     .alias('help', 'h')
     .argv;
-log.debug("argv:", argv);
+log.debug("argv: %o", argv);
 
 // Instanciates the handlers for each scenario
 var scenarii = [];
@@ -130,17 +127,17 @@ const scripts = argv.scripts;
 for ( var s=0 ; s<scripts.length ; s++ ) {
   var scenarioModule = scripts[s];
 
-  console.log("Loading scenario :", scenarioModule);
+  log.info("Loading scenario : %s", scenarioModule);
   var scenarioClass = require(scenarioModule);
 
   var scenarioName = path.basename(scenarioModule, path.extname(scenarioModule));
-  console.log("Scenario name :", scenarioName);
+  log.info("Scenario name : %s", scenarioName);
   // Merges top options and scenario-specific ones (specific overrides top ones)
   var conf = Object.assign({}, argv);
   if ( argv.conf !== undefined && argv.conf[scenarioName] !== undefined ) {
     conf = Object.assign(conf, argv.conf[scenarioName]);
   }
-  console.log("Scenario conf. :", conf);
+  log.info("Scenario conf. %o :", conf);
 
   scenarii.push({
     name: scenarioName,
@@ -148,7 +145,7 @@ for ( var s=0 ; s<scripts.length ; s++ ) {
     handler: new scenarioClass(conf)
   });
 }
-console.log("Scenarii :", scenarii);
+log.info("Scenarii : %o", scenarii);
 
 
 server.bind(INCOMING_EVENT_SERVER_PORT, LOCAL_IP);
