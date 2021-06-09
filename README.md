@@ -51,6 +51,20 @@ On the command line, use `-s scripts/sync-volume.js` to enable this script and u
 Top-level options (e.g. `--source`) and configuration file are also valid (see instructions below).
 
 
+### Sync standby mode of several devices
+
+It sometimes happens that wirelessly-linked devices don't go to standby mode or don't awake together with the main one.
+It may be a bug or a reliability issue with network protocols ; however the result is that this forces you to physically put them on/off.
+
+This script will automatically forces a given list of devices to power on or off following the main device power status.
+
+On the command line, use `-s scripts/standby-together.js` to enable this script and use the following options :
+- `--conf.standby-together.source` sets the hostname or IP address of the *master* receiver
+- `--conf.standby-together.target` lists the *slave* devices that will follow the master's power status. You can separate them with a space or pass the option several times.
+
+Top-level options (e.g. `--source`) and configuration file are also valid (see instructions below).
+
+
 ## Command line usage
 
 This program requires [Node.js](https://nodejs.org) to run.
