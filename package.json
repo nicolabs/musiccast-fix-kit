@@ -9,6 +9,7 @@
     "node": ">=10"
   },
   "dependencies": {
+    "winston": "^3.3.3",
     "yamaha-yxc-nodejs": "0.0.13",
     "yargs": "^16.2.0"
   }

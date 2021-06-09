@@ -1,5 +1,6 @@
 const yargs = require('yargs');
 const path = require('path');
+const log = require('winston');
 const udp = require('dgram');
 const server = udp.createSocket('udp4');
 const http = require('http');
@@ -116,12 +117,12 @@ const argv = yargs
       type: 'array',
       demandOption: true
     })
-    // Configuration as a whole .json file
+    // --config : configuration as a whole .json file
     .config()
     .help()
     .alias('help', 'h')
     .argv;
-console.log("argv:", argv);
+log.debug("argv:", argv);
 
 // Instanciates the handlers for each scenario
 var scenarii = [];
@@ -134,7 +135,11 @@ for ( var s=0 ; s<scripts.length ; s++ ) {
 
   var scenarioName = path.basename(scenarioModule, path.extname(scenarioModule));
   console.log("Scenario name :", scenarioName);
-  var conf = Object.assign({}, argv, argv.conf[scenarioName]);
+  // Merges top options and scenario-specific ones (specific overrides top ones)
+  var conf = Object.assign({}, argv);
+  if ( argv.conf !== undefined && argv.conf[scenarioName] !== undefined ) {
+    conf = Object.assign(conf, argv.conf[scenarioName]);
+  }
   console.log("Scenario conf. :", conf);
 
   scenarii.push({

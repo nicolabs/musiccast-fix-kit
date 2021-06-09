@@ -1,10 +1,12 @@
+const log = require('winston');
+
 module.exports = class Scenario {
 
   constructor( configuration ) {
-    console.debug("Debug configuration :",configuration);
+    log.debug("Debug configuration :",configuration);
   }
 
   onEvent( event ) {
-    console.debug("<<<",event);
+    log.debug("<<<",event);
   }
 }
