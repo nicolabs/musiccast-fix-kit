@@ -1,3 +1,4 @@
+const log = require('../logging');
 const YamahaYXC = require('yamaha-yxc-nodejs');
 
 const inputSourceToSoundProgam = inputSource => {
@@ -36,7 +37,7 @@ module.exports = class Scenario {
   */
   constructor( configuration ) {
     this.source = new YamahaYXC(configuration.source);
-    console.debug("Source : ",this.source);
+    log.debug("Source : %s",this.source);
   }
 
   /**
@@ -53,11 +54,11 @@ module.exports = class Scenario {
       const setClearVoice = inputSourceShouldUseClearVoice(event.main.input);
 
       if (soundProgram) {
-        console.log('Changing sound program to', soundProgram);
+        log.info('Changing sound program to %s', soundProgram);
         this.source.setSound(soundProgram);
       }
 
-      console.log('Setting clear voice to', setClearVoice);
+      log.info('Setting clear voice to %s', setClearVoice);
       this.source.setClearVoice(setClearVoice);
     }
 

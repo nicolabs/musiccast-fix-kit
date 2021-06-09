@@ -1,3 +1,4 @@
+const log = require('../logging');
 const YamahaYXC = require('yamaha-yxc-nodejs');
 
 module.exports = class Scenario {
@@ -18,7 +19,7 @@ module.exports = class Scenario {
     source.getDeviceInfo().
       then( result => {
         source.deviceInfo = JSON.parse(result);
-        console.debug("Source :",source);
+        log.debug("Source : %s",source);
       }
     );
     this.source = source;
@@ -33,7 +34,7 @@ module.exports = class Scenario {
       // We allow 'configuration.target' to be a string if only one value is given
       this.targets.push( new YamahaYXC(configuration.target) );
     }
-    console.debug("Targets :",this.targets);
+    log.debug("Targets : %o",this.targets);
   }
 
   /**
@@ -52,10 +53,10 @@ module.exports = class Scenario {
     }
 
     // OK, let's handle this volume change
-    console.log("<<<", event);
+    log.info("<<< Received a volume update : %j", event);
 
     for ( var t=0 ; t<this.targets.length ; t++ ) {
-      console.log(">>>", this.targets[t].ip, ".setVolumeTo:", event.main.volume);
+      log.info(">>> Setting volume of %s to %s", this.targets[t].ip, event.main.volume);
       this.targets[t].setVolumeTo(event.main.volume);
     }
   }
