@@ -10,8 +10,8 @@ RUN npm install --production
 
 FROM ${BASEIMAGE}
 EXPOSE 41100/udp
-CMD [ "node", "index.js" ]
+ENTRYPOINT [ "node", "index.js" ]
 WORKDIR /usr/src/app
 COPY --from=builder /usr/src/app/node_modules ./node_modules/
-COPY index.js package.json ./
+COPY index.js logging.js package*.json ./
 COPY scripts/* ./scripts/
