@@ -28,12 +28,20 @@ jobs:
 
     - name: Docker meta
       id: docker_meta
-      uses: crazy-max/ghaction-docker-meta@v2.1.1
+      uses: docker/metadata-action@v3
       with:
         # list of Docker images to use as base name for tags
         images: nicolabs/musiccast-repairkit
-        # add git short SHA as Docker tag
-        tag-sha: true
+        # See https://github.com/docker/metadata-action#tags-input
+        tags: |
+          type=schedule
+          type=ref,event=branch
+          type=ref,event=tag
+          type=ref,event=pr
+          type=sha
+          type=semver,pattern={{version}}
+          type=semver,pattern={{major}}.{{minor}}
+          type=semver,pattern={{major}}
 
     - name: Set up QEMU for multiarch
       uses: docker/setup-qemu-action@v1
