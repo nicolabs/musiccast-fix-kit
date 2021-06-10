@@ -9,6 +9,16 @@ const YamahaYXC = require('yamaha-yxc-nodejs');
 const LOCAL_IP = process.env.LOCAL_IP || "0.0.0.0";
 const INCOMING_EVENT_SERVER_PORT = parseInt(process.env.PORT) || 41100;
 
+// Takes signals into account (and also Ctrl+C from the console)
+// See https://github.com/nodejs/node/issues/4182
+function exitOnSignal(signal) {
+  process.on(signal, function() {
+    process.exit(1);
+  });
+}
+exitOnSignal('SIGINT');
+exitOnSignal('SIGTERM');
+
 const send = (host, path, headers) =>
   http
     .get(
