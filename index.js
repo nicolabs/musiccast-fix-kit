@@ -124,11 +124,23 @@ const argv = yargs
       type: 'array',
       demandOption: true
     })
+    .option('l', {
+      alias: ['log-level'],
+      describe: 'Specifies the logging level',
+      choices: ['error','warn','info','http','verbose','debug','silly'],
+      type: 'string'
+    })
     // --config : configuration as a whole .json file
     .config()
     .help()
     .alias('help', 'h')
     .argv;
+
+// Reflects log level option
+if ( argv.l !== undefined ) {
+  log.level = argv.l;
+}
+
 log.debug("argv: %o", argv);
 
 // Instanciates the handlers for each scenario
