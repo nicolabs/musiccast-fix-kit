@@ -147,7 +147,9 @@ Deploy on a swarm cluster :
 
 ## Logging and debugging
 
-Logging is configured in the [`logging.js`](logging.js) module : feel free to override it locally or in a custom Docker image.
+There is an option `-l` to change the default logging level ; the most useful option might be `-l debug`.
+
+Otherwise, logging is set up in the [`logging.js`](logging.js) module : feel free to override it locally or in your custom Docker image.
 
 There is a special `scripts/debug.js` script that does nothing but printing debug informations. It is simply loaded as a scenario (you need to set log level to *debug* at least) :
 
