@@ -1,6 +1,6 @@
 # MusicCast "repair kit" 🩹
 
-[![Docker Hub](https://github.com/nicolabs/musiccast-repairkit/actions/workflows/dockerhub.yml/badge.svg)](https://hub.docker.com/r/nicolabs/musiccast-repairkit) [![Buy us a tree](https://img.shields.io/badge/Plant%20trees-%F0%9F%8C%B3-lightgreen)](https://plant.treeware.earth/nicolabs/musiccast-repairkit)
+[![Docker Hub](https://github.com/nicolabs/musiccast-repairkit/actions/workflows/dockerhub.yml/badge.svg)](https://hub.docker.com/r/nicolabs/musiccast-repairkit) [![GitHub repo](https://img.shields.io/badge/GitHub-repo-pink.svg?logo=github)](https://github.com/nicolabs/musiccast-repairkit) [![Buy us a tree](https://img.shields.io/badge/Plant%20trees-%F0%9F%8C%B3-lightgreen)](https://plant.treeware.earth/nicolabs/musiccast-repairkit)
 
 This program will help you implement missing features for your [Yamaha MusicCast©](https://usa.yamaha.com/products/contents/audio_visual/musiccast/index.html) devices by watching events (e.g. volume or source change) and automatically updating the settings, according to your scenarios.
 
