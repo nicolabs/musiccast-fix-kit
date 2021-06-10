@@ -145,8 +145,9 @@ Deploy on a swarm cluster :
 
 ## Logging and debugging
 
-There is a special `scripts/debug.js` script that does nothing but printing debug informations. It is simply loaded as a scenario :
+Logging is configured in the [`logging.js`](logging.js) module : feel free to override it locally or in a custom Docker image.
 
+There is a special `scripts/debug.js` script that does nothing but printing debug informations. It is simply loaded as a scenario :
 
     node . -s ./scripts/sync-volume.js ./scripts/debug.js --source=192.168.1.42 ...
 
