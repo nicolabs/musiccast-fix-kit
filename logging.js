@@ -1,7 +1,7 @@
 const winston = require('winston');
 
 module.exports = winston.createLogger({
-    level: 'debug',
+    level: 'info',
     transports: [
       new winston.transports.Console()
     ],

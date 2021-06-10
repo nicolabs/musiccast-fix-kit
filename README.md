@@ -149,9 +149,9 @@ Deploy on a swarm cluster :
 
 Logging is configured in the [`logging.js`](logging.js) module : feel free to override it locally or in a custom Docker image.
 
-There is a special `scripts/debug.js` script that does nothing but printing debug informations. It is simply loaded as a scenario :
+There is a special `scripts/debug.js` script that does nothing but printing debug informations. It is simply loaded as a scenario (you need to set log level to *debug* at least) :
 
-    node . -s ./scripts/sync-volume.js ./scripts/debug.js --source=192.168.1.42 ...
+    node . -s ./scripts/sync-volume.js ./scripts/debug.js -l debug --source=192.168.1.42 ...
 
 
 This will log network activity (Node.js native) :
