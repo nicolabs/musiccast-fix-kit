@@ -114,7 +114,9 @@ Example
 
 ## Docker usage
 
-Instead of installing _Node.js_ and running the scripts you can run a [docker](https://www.docker.com/) image.
+Instead of installing _Node.js_ and running the scripts you can run from a [docker](https://www.docker.com/) image :
+
+    docker run -d --network=host nicolabs/musiccast-repairkit:1.1 -s ./scripts/standby-together.js --source 192.168.1.42 --target 192.168.1.43
 
 Please see [docker-compose.yml](docker-compose.yml) for a deployment template.
 
