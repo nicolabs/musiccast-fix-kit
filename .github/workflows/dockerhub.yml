@@ -84,7 +84,7 @@ jobs:
 
     # https://github.com/peter-evans/dockerhub-description
     - name: Update repo description
-      uses: peter-evans/dockerhub-description@v2
+      uses: peter-evans/dockerhub-description@v2.4.2
       with:
           username: ${{ secrets.DOCKER_HUB_USERNAME }}
           password: ${{ secrets.DOCKER_HUB_PASSWORD }}
