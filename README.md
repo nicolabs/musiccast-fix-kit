@@ -42,7 +42,7 @@ Currently the following mappings from source to sound program are hard coded. Yo
     spotify => music with clear_voice disabled
     airplay => music with clear_voice disabled
 
-On the command line, use `-s scripts/audio-profile.js` to enable this script and use the `--conf.audio-profile.source=<source_IP>` option to set the hostname or IP address of the receiver.
+On the command line, use `-s scripts/audio-profile.js` to enable this script and use the `--audio-profile.source=<source_IP>` option to set the hostname or IP address of the receiver.
 
 Top-level options (e.g. `--source`) and configuration file are also valid (see instructions below).
 
@@ -62,8 +62,8 @@ This script will solve this by listening to volume changes on a source device an
 #### How to configure
 
 On the command line, use `-s scripts/sync-volume.js` to enable this script and use the following options :
-- `--conf.sync-volume.source=<source_IP>` sets the hostname or IP address of the *master* receiver
-- `--conf.sync-volume.target=<target_IP [target_IP [...]]>` lists the *slave* devices that will reflect the master's volume changes. You can separate them with a space or pass the option several times.
+- `--sync-volume.source=<source_IP>` sets the hostname or IP address of the *master* receiver
+- `--sync-volume.target=<target_IP [target_IP [...]]>` lists the *slave* devices that will reflect the master's volume changes. You can separate them with a space or pass the option several times.
 
 Top-level options (e.g. `--source`) and configuration file are also valid (see instructions below).
 
@@ -80,8 +80,8 @@ This script will automatically force a given list of devices to power on or off 
 #### How to configure
 
 On the command line, use `-s scripts/standby-together.js` to enable this script and use the following options :
-- `--conf.standby-together.source=<source_IP>` sets the hostname or IP address of the *master* receiver
-- `--conf.standby-together.target=<target_IP [target_IP [...]]>` lists the *slave* devices that will follow the master's power status. You can separate them with a space or pass the option several times.
+- `--standby-together.source=<source_IP>` sets the hostname or IP address of the *master* receiver
+- `--standby-together.target=<target_IP [target_IP [...]]>` lists the *slave* devices that will follow the master's power status. You can separate them with a space or pass the option several times.
 
 Top-level options (e.g. `--source`) and configuration file are also valid (see instructions below).
 
@@ -89,6 +89,10 @@ Top-level options (e.g. `--source`) and configuration file are also valid (see i
 ## Command line usage
 
 This program requires [Node.js](https://nodejs.org) to run.
+
+Previously to running it, you need to install dependencies by running the following command in the source directory :
+
+    npm install
 
 When running the program you need to specify which scenarios to run.
 The scenarios are `.js` scripts which implement the use cases above. More details in the next sections.
@@ -99,27 +103,24 @@ Use the **`-s` command line option to specify which script(s) to load** ; for ex
 
 You can pass all options on the command line, or use the **`--config` option to store them in a JSON file** ; example :
 
-
     node . -s ./scripts/sync-volume.js --config config.json
 
 Contents of config.json :
 
 ```json
 {
-  "conf": {
-    "sync-volume": {
-      "source": "192.168.1.42",
-      "target": [
-        "192.168.1.43",
-        "192.168.1.44"
-      ]
-    }
+  "sync-volume": {
+    "source": "192.168.1.42",
+    "target": [
+      "192.168.1.43",
+      "192.168.1.44"
+    ]
   }
 }
 ```
 
 You can define **generic options** at the top level and **scenario-specific options** under a prefix named after the script's name (its filename without extension).
-For instance with `--source 1.2.3.4 --conf.sync-volume.source 5.6.7.8`, `1.2.3.4` will be used as the *source* parameter by default but `5.6.7.8` will be used for the *sync-volume* scenario only.
+For instance with `--source 1.2.3.4 --sync-volume.source 5.6.7.8`, `1.2.3.4` will be used as the *source* parameter by default but `5.6.7.8` will be used for the *sync-volume* scenario only.
 
 You can pass those arguments multiple times or provide space-separated values if you need to.
 

@@ -1,5 +1,5 @@
 const log = require('../logging');
-const YamahaYXC = require('yamaha-yxc-nodejs');
+const YamahaYXC = require('yamaha-yxc-nodejs').YamahaYXC;
 
 const inputSourceToSoundProgam = inputSource => {
   switch (inputSource) {

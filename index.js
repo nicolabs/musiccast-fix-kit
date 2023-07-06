@@ -2,12 +2,13 @@ const yargs = require('yargs');
 const path = require('path');
 const log = require('./logging');
 const udp = require('dgram');
-const server = udp.createSocket('udp4');
 const http = require('http');
-const YamahaYXC = require('yamaha-yxc-nodejs');
+const YamahaYXC = require('yamaha-yxc-nodejs').YamahaYXC;
 
 const LOCAL_IP = process.env.LOCAL_IP || "0.0.0.0";
 const INCOMING_EVENT_SERVER_PORT = parseInt(process.env.PORT) || 41100;
+
+
 
 // Takes signals into account (and also Ctrl+C from the console)
 // See https://github.com/nodejs/node/issues/4182
@@ -18,6 +19,12 @@ function exitOnSignal(signal) {
 }
 exitOnSignal('SIGINT');
 exitOnSignal('SIGTERM');
+
+
+
+//
+// MusicCast utility functions
+//
 
 const send = (host, path, headers) =>
   http
@@ -60,6 +67,14 @@ const sendEventServerAddress = (hostname,port) => {
   };
 
 
+
+
+//
+// Instanciates the server
+//
+
+const server = udp.createSocket('udp4');
+
 server.on('close', () => {
   log.info('Server is closed!');
   // TODO ? Notify the device not to send events anymore ?
@@ -70,6 +85,7 @@ server.on('error', error => {
   server.close();
 });
 
+// Executes the scenarii for each received MusicCast message
 server.on('message', (msg, _info) => {
   let body = '';
 
@@ -87,6 +103,7 @@ server.on('message', (msg, _info) => {
   }
 });
 
+// Initializes the server once it is listening to the network
 server.on('listening', () => {
   const address = server.address();
   const port = address.port;
@@ -98,7 +115,7 @@ server.on('listening', () => {
   var sourcesDict = {};
   for ( s=0 ; s<scenarii.length ; s++ ) {
     var scenario = scenarii[s];
-    if ( scenario.conf && typeof scenario.conf !== 'undefined' &&
+    if ( scenario && typeof scenario !== 'undefined' &&
         scenario.conf.source && typeof scenario.conf.source !== 'undefined' ) {
           sourcesDict[scenario.conf.source] = true;
     }
@@ -115,7 +132,12 @@ server.on('listening', () => {
   }
 });
 
+
+
+//
 // Command line parsing
+//
+
 const argv = yargs
     .option('s', {
       alias: ['scripts'],
@@ -131,7 +153,9 @@ const argv = yargs
       type: 'string'
     })
     // --config : configuration as a whole .json file
-    .config()
+    .config('config')
+    // -c : shortcut for --config
+    .config('c')
     .help()
     .alias('help', 'h')
     .argv;
@@ -143,23 +167,28 @@ if ( argv.l !== undefined ) {
 
 log.debug("argv: %o", argv);
 
-// Instanciates the handlers for each scenario
+
+
+//
+// Bootstrap configuration : instanciates the handlers for each scenario
+//
+
 var scenarii = [];
 const scripts = argv.scripts;
 for ( var s=0 ; s<scripts.length ; s++ ) {
   var scenarioModule = scripts[s];
 
-  log.info("Loading scenario : %s", scenarioModule);
+  log.debug("Loading scenario : %s", scenarioModule);
   var scenarioClass = require(scenarioModule);
 
   var scenarioName = path.basename(scenarioModule, path.extname(scenarioModule));
-  log.info("Scenario name : %s", scenarioName);
+  log.debug("Scenario name : %s", scenarioName);
   // Merges top options and scenario-specific ones (specific overrides top ones)
   var conf = Object.assign({}, argv);
-  if ( argv.conf !== undefined && argv.conf[scenarioName] !== undefined ) {
-    conf = Object.assign(conf, argv.conf[scenarioName]);
+  if ( argv !== undefined && argv[scenarioName] !== undefined ) {
+    conf = Object.assign(conf, argv[scenarioName]);
   }
-  log.info("Scenario conf. %o :", conf);
+  log.debug("Scenario conf : %o :", conf);
 
   scenarii.push({
     name: scenarioName,
@@ -170,4 +199,10 @@ for ( var s=0 ; s<scripts.length ; s++ ) {
 log.info("Scenarii : %o", scenarii);
 
 
+
+//
+// Starts the server
+//
+
+log.debug("server.bind(%s,%s)", INCOMING_EVENT_SERVER_PORT, LOCAL_IP);
 server.bind(INCOMING_EVENT_SERVER_PORT, LOCAL_IP);

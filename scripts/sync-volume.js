@@ -1,5 +1,5 @@
 const log = require('../logging');
-const YamahaYXC = require('yamaha-yxc-nodejs');
+const YamahaYXC = require('yamaha-yxc-nodejs').YamahaYXC;
 
 module.exports = class Scenario {
 
@@ -18,7 +18,8 @@ module.exports = class Scenario {
     var source = new YamahaYXC(configuration.source);
     source.getDeviceInfo().
       then( result => {
-        source.deviceInfo = JSON.parse(result);
+        // result is a JSON object
+        source.deviceInfo = result;
         log.debug("Source : %s",source);
       }
     );
