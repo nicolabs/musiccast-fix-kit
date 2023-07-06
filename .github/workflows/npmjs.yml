@@ -1,4 +1,6 @@
 # Doc : https://docs.github.com/en/actions/publishing-packages/publishing-nodejs-packages
+# Also : https://docs.npmjs.com/creating-and-publishing-unscoped-public-packages
+# For provenance see https://docs.npmjs.com/generating-provenance-statements
 name: Publish Package to npmjs
 
 on:
