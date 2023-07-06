@@ -1,19 +1,19 @@
 # MusicCast "repair kit" 🩹
 
-[![Docker Hub](https://github.com/nicolabs/musiccast-repairkit/actions/workflows/dockerhub.yml/badge.svg)](https://hub.docker.com/r/nicolabs/musiccast-repairkit) [![GitHub repo](https://img.shields.io/badge/GitHub-repo-pink.svg?logo=github)](https://github.com/nicolabs/musiccast-repairkit) [![Buy us a tree](https://img.shields.io/badge/Plant%20trees-%F0%9F%8C%B3-lightgreen)](https://plant.treeware.earth/nicolabs/musiccast-repairkit)
+[![Docker Hub](https://github.com/nicolabs/musiccast-repairkit/actions/workflows/dockerhub.yml/badge.svg)](https://hub.docker.com/r/nicolabs/musiccast-repairkit) [![npmjs repo](https://img.shields.io/npm/v/musiccast-repairkit)](https://npmjs.com/package/musiccast-repairkit) [![GitHub repo](https://img.shields.io/badge/GitHub-source-pink.svg?logo=github)](https://github.com/nicolabs/musiccast-repairkit) [![Buy us a tree](https://img.shields.io/badge/Plant%20trees-%F0%9F%8C%B3-lightgreen)](https://plant.treeware.earth/nicolabs/musiccast-repairkit)
 
 This software implements missing features for your [Yamaha MusicCast©](https://usa.yamaha.com/products/contents/audio_visual/musiccast/index.html) devices by using their embedded Application Programming Interface (API).
 
 You will have to run this program on an always-on machine, connected to the same WiFi / Ethernet nertwork as your MusicCast devices so that it can communicate with them.
 
-The behavior is managed by enabling and configuring scenarios, each doing a specific task. You can even code your own scenarios.
+The behavior is managed by enabling and configuring scenarios, each one doing a specific task. You can even code your own scenarios.
 
 
 ## Scenarios
 
 Each scenario is implemented as a script, written in JavaScript (run with [NodeJs](https://nodejs.org/)).
 
-There is no guide on how to develop your own scenario, but you should look at the existing scripts, which are easy to understand for any JavaScript programmer.
+There is no guide on how to develop your own scenario, but you may look at the existing scripts, which are easy to understand for any JavaScript programmer.
 Basically they work by watching events over the network (e.g. volume or source change) and calling accordingly the API of the MusicCast devices.
 
 Scenarios are already provided in the [scripts](./scripts) directory in this project, for the following use cases :
@@ -23,7 +23,7 @@ Scenarios are already provided in the [scripts](./scripts) directory in this pro
 - [standby several devices together](scenario-standby-several-devices-together)
 
 
-### Scenario : Automatic sound program depending on the source
+### Scenario 1 : Automatic sound program depending on the source
 
 ![Illustration : source buttons on remote](doc/source-buttons.png)
 
@@ -42,12 +42,12 @@ Currently the following mappings from source to sound program are hard coded. Yo
     spotify => music with clear_voice disabled
     airplay => music with clear_voice disabled
 
-On the command line, use `-s scripts/audio-profile.js` to enable this script and use the `--audio-profile.source=<source_IP>` option to set the hostname or IP address of the receiver.
+On the command line, use `-s scripts/audio-profile.js` to enable this script and `--audio-profile.source=<source_IP>` to set the hostname or IP address of the receiver.
 
-Top-level options (e.g. `--source`) and configuration file are also valid (see instructions below).
+Top-level options (e.g. `--source`) and configuration file are also valid (see [instructions below](#command-line-usage)).
 
 
-### Scenario : Synchronize volume of several devices
+### Scenario 2 : Synchronize volume of several devices
 
 ![Illustration : volume buttons on remote](doc/volume-buttons.png)
 
@@ -65,10 +65,10 @@ On the command line, use `-s scripts/sync-volume.js` to enable this script and u
 - `--sync-volume.source=<source_IP>` sets the hostname or IP address of the *master* receiver
 - `--sync-volume.target=<target_IP [target_IP [...]]>` lists the *slave* devices that will reflect the master's volume changes. You can separate them with a space or pass the option several times.
 
-Top-level options (e.g. `--source`) and configuration file are also valid (see instructions below).
+Top-level options (e.g. `--source`) and configuration file are also valid (see [instructions below](#command-line-usage)).
 
 
-### Scenario : Standby several devices together
+### Scenario 3 : Standby several devices together
 
 #### What it does
 
@@ -79,31 +79,33 @@ This script will automatically force a given list of devices to power on or off 
 
 #### How to configure
 
-On the command line, use `-s scripts/standby-together.js` to enable this script and use the following options :
+On the command line, use `-s scripts/standby-together.js` to enable this script and the following options :
 - `--standby-together.source=<source_IP>` sets the hostname or IP address of the *master* receiver
 - `--standby-together.target=<target_IP [target_IP [...]]>` lists the *slave* devices that will follow the master's power status. You can separate them with a space or pass the option several times.
 
-Top-level options (e.g. `--source`) and configuration file are also valid (see instructions below).
+Top-level options (e.g. `--source`) and configuration file are also valid (see [instructions below](#command-line-usage)).
+
 
 
 ## Command line usage
 
-This program requires [Node.js](https://nodejs.org) to run.
-
-Previously to running it, you need to install dependencies by running the following command in the source directory :
-
-    npm install
+> There are many ways to run this program ; the exact shape of the command line depends on how you run it : with [npm, node](#running-with-nodejs-npm), [docker](#running-with-docker) or another way.
+> For instance if you run using *npx*, replace `musiccast-repairkit ...` in the commands below with `npx musiccast-repairkit ...`.
 
 When running the program you need to specify which scenarios to run.
-The scenarios are `.js` scripts which implement the use cases above. More details in the next sections.
+The scenarios are `.js` scripts which implement the use cases above.
 
 Use the **`-s` command line option to specify which script(s) to load** ; for example :
 
-    node . -s ./scripts/sync-volume.js --source=192.168.1.42 --target=192.168.1.43 --target=192.168.1.44
+    musiccast-repairkit -s ./scripts/sync-volume.js --source=192.168.1.42 --target=192.168.1.43 --target=192.168.1.44
 
-You can pass all options on the command line, or use the **`--config` option to store them in a JSON file** ; example :
+You can run several scenarios at the same time :
 
-    node . -s ./scripts/sync-volume.js --config config.json
+    musiccast-repairkit -s ./scripts/sync-volume.js -s ./scripts/standby-together.js ...
+
+You can pass all options on the command line, or use the **`--config` option to read them from a JSON file** ; example :
+
+    musiccast-repairkit -s ./scripts/sync-volume.js --config config.json
 
 Contents of config.json :
 
@@ -121,6 +123,7 @@ Contents of config.json :
 
 You can define **generic options** at the top level and **scenario-specific options** under a prefix named after the script's name (its filename without extension).
 For instance with `--source 1.2.3.4 --sync-volume.source 5.6.7.8`, `1.2.3.4` will be used as the *source* parameter by default but `5.6.7.8` will be used for the *sync-volume* scenario only.
+This also works for the JSON configuration file.
 
 You can pass those arguments multiple times or provide space-separated values if you need to.
 
@@ -131,19 +134,40 @@ The following **environment variables** may be specified before running `index.j
 
 Example
 
-    PORT=44444 LOCAL_IP=192.168.1.187 node . [...]
+    PORT=44444 LOCAL_IP=192.168.1.187 musiccast-repairkit ...
 
 
 
-## Docker usage
+## Running with Node.js / npm
 
-Instead of installing _Node.js_ and running this program from sources you can run it directly from a [Docker](https://www.docker.com/) image :
+You can run the program natively using [Node.js](https://nodejs.org).
+
+You can get the package from [npmjs](https://npmjs.com/package/musiccast-repairkit) ; here is one way :
+
+    # Installs npx for npm < 5.2.0
+    npm install -g npx
+    # Run the program
+    npx musiccast-repairkit -s my-custom-scenario.js --config my-config.json
+
+Or you can run from the sources directly :
+
+    # Get the sources
+    git clone https://github.com/nicolabs/musiccast-repairkit
+    cd musiccast-repairkit
+    # Install dependencies
+    npm install
+    # Run the program
+    node . -s my-custom-scenario.js --config my-config.json
+
+
+
+## Running with Docker
+
+Instead of running this program with _Node.js_ / _npm_ you can run it as a [Docker](https://hub.docker.com/r/nicolabs/musiccast-repairkit) container :
 
     docker run -d --network=host nicolabs/musiccast-repairkit:1.1 -s ./scripts/standby-together.js --source 192.168.1.42 --target 192.168.1.43
 
-See also [docker-compose.yml](docker-compose.yml) for a deployment template.
-
-This sample contains an example *command* that you shall override to fit your needs.
+See also [docker-compose.yml](docker-compose.yml) for a deployment template. It contains a sample *command* that you shall override to fit your needs.
 You can edit it locally to reflect the IP addresses of your setup (or use a `.env` file or set environment variables).
 It should not be necessary to define a `LOCAL_IP` environment variable as IP addresses inside the container will likely don't match the one of the host.
 
@@ -176,12 +200,12 @@ Otherwise, logging is set in the [`logging.js`](logging.js) module : feel free t
 
 There is a special `scripts/debug.js` script that does nothing but print debug informations. It is simply loaded as a scenario (you need to set log level to *debug* at least) :
 
-    node . -s ./scripts/sync-volume.js ./scripts/debug.js -l debug --source=192.168.1.42 ...
+    musiccast-repairkit -s ./scripts/sync-volume.js ./scripts/debug.js -l debug --source=192.168.1.42 ...
 
 
 Note : Node.Js natively allows to log network activity :
 
-    NODE_DEBUG="net" node index.js ...
+    NODE_DEBUG="net" musiccast-repairkit ...
 
 
 ## References

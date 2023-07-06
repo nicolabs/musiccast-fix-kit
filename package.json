@@ -4,7 +4,6 @@
   "main": "index.js",
   "author": "nicobo (https://www.nicolabs.net/people/nicobo)",
   "license": "MIT",
-  "private": true,
   "engines": {
     "node": ">=10"
   },
@@ -12,5 +11,9 @@
     "winston": "^3.3.3",
     "yamaha-yxc-nodejs": "3.1.2",
     "yargs": "^17.7.1"
-  }
+  },
+  "scripts": {
+    "test": "node . --version"
+  },
+  "bin": "./index.js"
 }
