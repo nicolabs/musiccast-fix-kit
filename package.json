@@ -1,6 +1,10 @@
 {
   "name": "musiccast-repairkit",
   "version": "2.0.0",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/nicolabs/musiccast-repairkit.git"
+  },
   "main": "index.js",
   "author": "nicobo (https://www.nicolabs.net/people/nicobo)",
   "license": "MIT",

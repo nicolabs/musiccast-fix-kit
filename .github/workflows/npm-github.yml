@@ -3,6 +3,8 @@ name: Publish package to GitHub Packages
 
 on:
   push:
+    branches:
+      - master
     tags:
       - 'v*.*.*'
 
@@ -24,6 +26,6 @@ jobs:
           scope: '@nicolabs'
       - run: npm ci
       - run: npm test
-      - run: npm publish --provenance --access public
+      - run: npm publish
         env:
           NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
