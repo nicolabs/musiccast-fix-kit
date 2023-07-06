@@ -5,7 +5,9 @@
     "type": "git",
     "url": "https://github.com/nicolabs/musiccast-repairkit.git"
   },
-  "main": "index.js",
+  "publishConfig": {
+    "provenance": true
+  },
   "author": "nicobo (https://www.nicolabs.net/people/nicobo)",
   "license": "MIT",
   "engines": {
@@ -19,5 +21,6 @@
   "scripts": {
     "test": "node . --version"
   },
+  "main": "index.js",
   "bin": "./index.js"
 }
