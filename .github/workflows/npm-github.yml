@@ -2,12 +2,13 @@
 name: Publish package to GitHub Packages
 
 on:
-  # push:
-  #   tags:
-  #     - 'v*.*.*'
+  push:
+     tags:
+       - 'v*.*.*'
 
 jobs:
   build:
+    if: false
     runs-on: ubuntu-latest
     permissions:
       contents: read
