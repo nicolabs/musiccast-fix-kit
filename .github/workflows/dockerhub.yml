@@ -58,7 +58,7 @@ jobs:
 
     - name: Build and push image
       id: docker_build_alpine
-      uses: docker/build-push-action@v4.0.0
+      uses: docker/build-push-action@v4.2.1
       with:
           context: ./
           builder: ${{ steps.buildx.outputs.name }}
